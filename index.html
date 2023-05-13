@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird</title>
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+            /*display: flex;*/
+        }
+        canvas {
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 30px;
+            display: flex;
+        }
+
+    </style>
+</head>
+<body>
+<canvas id="gameZone" width="900" height="500" style="border: solid lightgreen"></canvas>
+<button id="score">Score:</button>
+<button id="mp3" onclick="onOffBgrMusic()">Play</button>
+</body>
+<script>
+    let bgrMusic = new Audio("audio/nhac_nen.mp3")
+    let bay = new Audio("audio/lat.mp3")
+    let hoe = new Audio("audio/hoer.mp3")
+    let isBgrMusic = false;
+
+    function onOffBgrMusic() {
+        // if (score == 0) {
+        //     onOffBgrMusic();
+        // }
+        isBgrMusic = !isBgrMusic;
+        if (isBgrMusic) {
+            bgrMusic.play();
+            document.getElementById('mp3').innerHTML = 'ON MP3'
+            document.getElementById('mp3').style.backgroundColor = 'blue'
+        } else {
+            bgrMusic.pause();
+            document.getElementById('mp3').innerHTML = 'OFF MP3'
+            document.getElementById('mp3').style.backgroundColor = 'red'
+        }
+    }
+
+    let score = 0;
+    let canvas = document.getElementById('gameZone');
+    let ctx = canvas.getContext('2d');
+
+    let widthCanvas = canvas.width;
+    let heightCanvas = canvas.height;
+
+    // console.log('day la ctx',ctx)
+    let bird = new Image();
+    let bgrImage = new Image();
+    let topTube = new Image();
+    let botTube = new Image();
+    bird.src = "image/bird.png";
+    bgrImage.src = "image/background.png";
+    topTube.src = "image/topTube.png";
+    botTube.src = "image/bottomTube.png";
+    // nạp các hình cho game .src source đến ảnh
+
+    // tạo biến
+
+
+    let spaceTube1 = 160; //gọi khoảng cách ống
+    let spaceTubeTopBot; // biến này là khoảng cách từ đầu ống trên đến vị trí đầu ống dưới
+    // tạo ra 1 object chim với tọa độ x y là 1 nữa canvas
+
+    let xBird = bgrImage.width / 5;
+    let yBird = bgrImage.height / 2;
+    let tube = []; //mảng ống để chứa các ống
+    tube[0] = {
+        x: widthCanvas,
+        y: 0 // khởi tạo ống đầu tiên nằm bên phải ngoài cùng và y=0;
+    }
+
+    //tạo function để chạy trò chơi
+    function gameStart() {
+
+        // load hình ảnh vào
+        ctx.drawImage(bgrImage, 0, 0);
+        ctx.drawImage(bird, xBird, yBird);
+        let request = requestAnimationFrame(gameStart);
+        for (let i = 0; i < tube.length; i++) {
+            spaceTubeTopBot = topTube.height + spaceTube1;
+            ctx.drawImage(topTube, tube[i].x, tube[i].y);
+            // vẽ ống trên theo tọa độ của ống đó
+            //  ống dưới phụ thuộc ống trên cộng thêm spacetube1
+            ctx.drawImage(botTube, tube[i].x, tube[i].y + spaceTubeTopBot);
+            // mình lấy vị trí ống trên cộng khoảng cách đến
+            //  random ống dưới nó lên xuống
+            tube[i].x -= 5; //để ống di chuyển
+
+            // thêm ống khi ống di chuyển đến giữa nó sẽ tạo thêm 1 ống nữa
+            if (tube[i].x == canvas.width / 2) {
+                tube.push({
+                    x: canvas.width,
+                    y: Math.floor(Math.random() * topTube.height) - topTube.height
+                    // tạo random cho chiều dài của ông trên
+                })
+            }
+            if (tube[i].x == 0) tube.splice(0, 1);
+            // nếu ống đụng lề trái thì xóa bớt phần tử mảng ống
+            if (tube[i].x == xBird) score++; // tính điểm khi vượt qua ống
+            //
+            if (yBird + bird.height == canvas.height ||  //  đụng đất
+                xBird + bird.width >= tube[i].x && xBird <= tube[i].x + topTube.width // với cái ống
+                && (yBird <= tube[i].y + topTube.height ||
+                    yBird + bird.height >= tube[i].y + spaceTubeTopBot) //  so sánh vị trí y
+            ) {
+
+                hoe.play()
+                console.log('va cham', tube[i].x)
+                isBgrMusic = false;
+                alert('Congratulations! your score ' + score)
+                window.cancelAnimationFrame(request)
+                window.location.reload();
+
+                // return;
+            }
+        }
+        document.getElementById('score').innerHTML = "score: " + score;
+        yBird += 3;// cho bird rơi xuống
+
+    }
+
+    // function cho nó bay lên khi nhấn phím bất kì
+    document.addEventListener("keydown", function () {
+        yBird -= 60;
+        bay.play()
+    })
+    gameStart();
+    // onOffBgrMusic()
+</script>
+</html>
