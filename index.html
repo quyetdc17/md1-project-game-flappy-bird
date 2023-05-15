@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flappy Bird</title>
     <style>
-        body{
+        * {
             margin: 0;
             padding: 0;
-            /*display: flex;*/
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
         }
+
         canvas {
             margin-left: auto;
             margin-right: auto;
@@ -17,32 +19,35 @@
             display: flex;
         }
 
+        button {
+            padding: 15px;
+            font-size: 20px;
+        }
+
     </style>
 </head>
 <body>
 <canvas id="gameZone" width="900" height="500" style="border: solid lightgreen"></canvas>
 <button id="score">Score:</button>
-<button id="mp3" onclick="onOffBgrMusic()">Play</button>
+<!--<button id="mp3" onclick="onOffBgrMusic()">Play Music</button>-->
 </body>
 <script>
     let bgrMusic = new Audio("audio/nhac_nen.mp3")
     let bay = new Audio("audio/lat.mp3")
     let hoe = new Audio("audio/hoer.mp3")
     let isBgrMusic = false;
-
+// thêm âm thanh cho game
     function onOffBgrMusic() {
-        // if (score == 0) {
-        //     onOffBgrMusic();
-        // }
+
         isBgrMusic = !isBgrMusic;
         if (isBgrMusic) {
             bgrMusic.play();
-            document.getElementById('mp3').innerHTML = 'ON MP3'
-            document.getElementById('mp3').style.backgroundColor = 'blue'
+            // document.getElementById('mp3').innerHTML = 'ON MP3'
+            // document.getElementById('mp3').style.backgroundColor = 'pink'
         } else {
             bgrMusic.pause();
-            document.getElementById('mp3').innerHTML = 'OFF MP3'
-            document.getElementById('mp3').style.backgroundColor = 'red'
+            // document.getElementById('mp3').innerHTML = 'OFF MP3'
+            // document.getElementById('mp3').style.backgroundColor = 'red'
         }
     }
 
@@ -52,7 +57,7 @@
 
     let widthCanvas = canvas.width;
     let heightCanvas = canvas.height;
-
+s
     // console.log('day la ctx',ctx)
     let bird = new Image();
     let bgrImage = new Image();
@@ -97,7 +102,7 @@
             tube[i].x -= 5; //để ống di chuyển
 
             // thêm ống khi ống di chuyển đến giữa nó sẽ tạo thêm 1 ống nữa
-            if (tube[i].x == canvas.width / 2) {
+            if (tube[i].x == canvas.width / 1.8) {
                 tube.push({
                     x: canvas.width,
                     y: Math.floor(Math.random() * topTube.height) - topTube.height
@@ -108,7 +113,7 @@
             // nếu ống đụng lề trái thì xóa bớt phần tử mảng ống
             if (tube[i].x == xBird) score++; // tính điểm khi vượt qua ống
             //
-            if (yBird + bird.height == canvas.height ||  //  đụng đất
+            if (yBird + bird.height == heightCanvas ||  //  đụng đất
                 xBird + bird.width >= tube[i].x && xBird <= tube[i].x + topTube.width // với cái ống
                 && (yBird <= tube[i].y + topTube.height ||
                     yBird + bird.height >= tube[i].y + spaceTubeTopBot) //  so sánh vị trí y
@@ -130,11 +135,15 @@
     }
 
     // function cho nó bay lên khi nhấn phím bất kì
+    document.addEventListener("click", function () {
+        yBird -= 60;
+        bay.play()
+    })
     document.addEventListener("keydown", function () {
         yBird -= 60;
         bay.play()
     })
     gameStart();
-    // onOffBgrMusic()
+    onOffBgrMusic()
 </script>
 </html>
